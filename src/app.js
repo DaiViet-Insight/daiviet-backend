@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 
@@ -8,6 +9,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const router = express.Router();
+const userRoutes = require('./routes/user');
 
 // CORS error handling
 app.use((req, res, next) => {
@@ -20,6 +22,7 @@ app.use((req, res, next) => {
     next();
 });
 app.use('/', router);
+app.use('/users', userRoutes);
 
 router.get('/', (req, res, next) => {
     res.send('Server is running ...');
