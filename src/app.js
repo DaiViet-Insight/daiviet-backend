@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-
+const path = require('path');
+const multer = require('multer');
 const morgan = require('morgan');
 app.use(morgan('dev'));
 const bodyParser = require('body-parser');
@@ -9,7 +10,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const router = express.Router();
-const userRoutes = require('./routes/user');
+//const userRoutes = require('./routes/user');
+const file = require('./routes/file.js');
+
 
 // CORS error handling
 app.use((req, res, next) => {
@@ -21,9 +24,9 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.use('/', router);
-app.use('/users', userRoutes);
-
+//app.use('/', router);
+//app.use('/users', userRoutes);
+app.use('/file', file);
 router.get('/', (req, res, next) => {
     res.send('Server is running ...');
 });
