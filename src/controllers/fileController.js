@@ -8,6 +8,14 @@ async function iuploadFile(req, res) {
         const filename = "image-" + Date.now() + ".jpg";
         stream = fs.createReadStream(file.path);
         const result = await uploadToBlobStorage(stream, containerName, filename);
+        fs.unlink(file.path, (err) => {
+            if (err) {
+                console.error(err)
+                return
+            }
+        });
+
+
         res.send(result);
     } catch (error) {
         console.log(error);
