@@ -1,20 +1,47 @@
-const { User } = require('../models');
+const userService = require("../services/userService");
+const followService = require("../services/followService");
 
 module.exports = {
-    getUsers: async (req, res) => {
-        const data = await User.findAll();
-        res.send(data);
+    login: async (req, res) => {
+        try {
+            const result = await userService.login(req.body);
+
+            // Check if the result contains an error property
+            if (result.error) {
+                res.status(result.statusCode || 500).json({
+                    error: result.message,
+                });
+            } else {
+                req.session.token = result.token;
+                res.status(200).json(result);
+            }
+        } catch (error) {
+            res.status(error.statusCode || 500).json({ error: error.message });
+        }
     },
-    getUserById: (req, res) => {
-        res.send('GET /users/:id');
+    getEventsByUserId: async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            const events = await followService.getEventsByUserId(userId);
+            res.status(200).json(events);
+        } catch (error) {
+            res.status(error.statusCode || 500).json({ error: error.message });
+        }
     },
-    createUser: (req, res) => {
-        res.send('POST /users');
+    register: async (req, res) => {
+        try {
+            const result = await userService.register(req.body);
+
+            // Check if the result contains an error property
+            if (result.error) {
+                res.status(result.statusCode || 500).json({
+                    error: result.message,
+                });
+            } else {
+                res.status(200).json(result);
+            }
+        } catch (error) {
+            res.status(error.statusCode || 500).json({ error: error.message });
+        }
     },
-    updateUser: (req, res) => {
-        res.send('PUT /users/:id');
-    },
-    deleteUser: (req, res) => {
-        res.send('DELETE /users/:id');
-    }
 };
