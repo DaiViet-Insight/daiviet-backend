@@ -41,6 +41,11 @@ Object.keys(db).forEach(modelName => {
 async function initData() {
 
   // destroy all data
+  await db.PostSave.destroy({
+    where: {},
+    truncate: false
+  });
+
   await db.NotificationComment.destroy({
     where: {},
     truncate: false
@@ -167,6 +172,7 @@ async function initData() {
   await db.ReportComment.initData();
   await db.NotificationPost.initData();
   await db.NotificationComment.initData();
+  await db.PostSave.initData();
 }
 
 // Connect to the database and then call initData

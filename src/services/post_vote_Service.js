@@ -5,6 +5,36 @@ const Sequelize = require("sequelize");
 module.exports = {
     create: async (userId, postId, value) => {
         try {
+            const isExist = await PostVote.findOne({
+                where: {
+                    userId: userId,
+                    postId: postId,
+                },
+            });
+            if (isExist) {
+                if (isExist.voteTypeId === value) {
+                    await PostVote.destroy({
+                        where: {
+                            userId: userId,
+                            postId: postId,
+                        },
+                    });
+                    return null;
+                } else {
+                    await PostVote.update(
+                        {
+                            voteTypeId: value,
+                        },
+                        {
+                            where: {
+                                userId: userId,
+                                postId: postId,
+                            },
+                        }
+                    );
+                    return null;
+                }
+            }
             const postVote = await PostVote.create({
                 userId: userId,
                 postId: postId,
