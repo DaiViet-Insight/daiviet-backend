@@ -10,6 +10,7 @@ router.param("postId", (req, res, next, postId) => {
     next();
 });
 
+router.post("/:postId/save", postController.savePost);
 router.post("/:postId/upvote", postController.upvotePost);
 router.post("/:postId/downvote", postController.downvotePost);
 router.use("/:postId/comments", commentRoutes);

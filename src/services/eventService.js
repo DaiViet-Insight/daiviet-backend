@@ -21,4 +21,16 @@ module.exports = {
             throw new Error(`Error fetching events: ${error.message}`);
         }
     },
+    getEventById: async (eventId) => {
+        try {
+            const event = await Event.findOne({
+                where: {
+                    id: eventId,
+                },
+            });
+            return event;
+        } catch (error) {
+            throw new Error(`Error fetching event by ID: ${error.message}`);
+        }
+    },
 };

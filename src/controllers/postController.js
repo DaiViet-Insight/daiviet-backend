@@ -1,5 +1,6 @@
 const PostService = require("../services/postService");
 const PostVoteService = require("../services/post_vote_Service");
+const PostSaveService = require("../services/post_save_Service");
 const CommentService = require("../services/commentService");
 const jwtService = require("../services/jwtService");
 
@@ -9,24 +10,37 @@ module.exports = {
         const type = req.query.type;
         const postId = req.query.afterPost;
         const limit = parseInt(req.query.size);
-        const userId = req.userId;
+        const eventId = req.query.eventId;
+        let userId = req.userId;
+        console.log(userId);
+        if (!userId) {
+            userId = jwtService.decodeToken(req.session.token).id;
+        }
+        console.log(userId);
         try {
+            let posts;
             if (type === "new") {
-                const posts = await PostService.getNewPost(limit, postId);
-                res.send(posts);
+                posts = await PostService.getNewPost(limit, postId, eventId);
             } else if (type === "hot") {
-                const posts = await CommentService.getPostsSort(limit, postId);
-                res.send(posts);
+                posts = await CommentService.getPostsSort(
+                    limit,
+                    postId,
+                    eventId
+                );
             } else if (type === "top") {
-                const posts = await PostVoteService.getPostsHot(limit, postId);
-                res.send(posts);
+                posts = await PostVoteService.getPostsHot(
+                    limit,
+                    postId,
+                    eventId
+                );
             } else if (status === "upvoted") {
-                const posts = await PostVoteService.getPostsByUserId(userId, 1);
-                res.send(posts);
+                posts = await PostVoteService.getPostsByUserId(userId, 1);
             } else if (status === "downvoted") {
-                const posts = await PostVoteService.getPostsByUserId(userId, 2);
-                res.send(posts);
+                posts = await PostVoteService.getPostsByUserId(userId, 2);
+            } else if (status === "saved") {
+                posts = await PostSaveService.getPostsByUserId(userId);
             }
+            res.send(posts);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -75,6 +89,20 @@ module.exports = {
                 2
             );
             res.send("Downvote post thành công !!!");
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    savePost: async (req, res) => {
+        try {
+            const postId = req.params.postId;
+            const result = await PostSaveService.create(
+                postId,
+                jwtService.decodeToken(req.session.token).id
+            );
+            if (result === null) {
+                res.send("Xóa bài viết thành công !!!");
+            } else res.send("Lưu bài viết thành công !!!");
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

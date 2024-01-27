@@ -1,5 +1,6 @@
 const userService = require("../services/userService");
 const followService = require("../services/followService");
+const jwtService = require("../services/jwtService");
 
 module.exports = {
     login: async (req, res) => {
@@ -21,7 +22,10 @@ module.exports = {
     },
     getEventsByUserId: async (req, res) => {
         try {
-            const userId = req.params.userId;
+            let userId = req.params.userId;
+            if (!userId) {
+                userId = jwtService.decodeToken(req.session.token).id;
+            }
             const events = await followService.getEventsByUserId(userId);
             res.status(200).json(events);
         } catch (error) {

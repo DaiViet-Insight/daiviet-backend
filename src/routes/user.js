@@ -10,6 +10,8 @@ router.param("userId", (req, res, next, userId) => {
 
 router.use("/:userId/posts", postRoutes);
 router.get("/:userId/follows", userController.getEventsByUserId);
+router.get("/follows", userController.getEventsByUserId);
+router.use("/posts", postRoutes);
 router.post("/register", userController.register);
 router.post("/login", userController.login);
 

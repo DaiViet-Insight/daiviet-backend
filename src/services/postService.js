@@ -4,11 +4,12 @@ const eventService = require("./eventService");
 const post_eventService = require("./post_event_Service");
 
 module.exports = {
-    getNewPost: async (limit, postId) => {
+    getNewPost: async (limit, postId, eventId) => {
         try {
             let queryOptions = {
                 limit: limit,
                 order: [["createdAt", "DESC"]],
+                where: {},
             };
             if (postId) {
                 const post = await Post.findByPk(postId);
@@ -17,9 +18,23 @@ module.exports = {
                     throw new Error("Bài viết không tồn tại");
                 }
 
-                queryOptions.where = {
-                    createdAt: { [Sequelize.Op.gt]: post.createdAt },
+                queryOptions.where.createdAt = {
+                    [Sequelize.Op.gt]: post.createdAt,
                 };
+            }
+
+            if (eventId) {
+                const event = await eventService.getEventById(eventId);
+
+                if (!event) {
+                    throw new Error("Sự kiện không tồn tại");
+                }
+
+                const postIds = await post_eventService.getPostIdsByEventId(
+                    eventId
+                );
+
+                queryOptions.where.id = postIds;
             }
 
             // Tìm x bài viết mới nhất sau bài viết tham chiếu theo createDate

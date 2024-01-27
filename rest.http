@@ -1,12 +1,12 @@
-GET http://localhost:3000/api/posts?type=new&size=7&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
+GET http://localhost:3000/api/posts?type=new&size=7&eventId=bc618a64-25f9-44dd-91b5-f8251f3bf6b9&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
 
 ### Lấy x bài viết mới nhất sau bài viết có afterPostId
 
-GET http://localhost:3000/api/posts?type=hot&size=10&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
+GET http://localhost:3000/api/posts?type=hot&size=10&eventId=bc618a64-25f9-44dd-91b5-f8251f3bf6b9&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
 
 ### Lấy x bài viết hot nhất sau bài viết có afterPostId
 
-GET http://localhost:3000/api/posts?type=top&size=10&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
+GET http://localhost:3000/api/posts?type=top&size=10&eventId=bc618a64-25f9-44dd-91b5-f8251f3bf6b9&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
 
 ### Lấy x bài viết top nhất sau bài viết có afterPostId
 
@@ -14,21 +14,25 @@ POST http://localhost:3000/api/posts/create
 Content-Type: application/json
 
 {
-    "title": "title13",
+    "title": "title6",
     "content": "content",
     "eventIds": ["bc618a64-25f9-44dd-91b5-f8251f3bf6b9"]
 }
 
 ### Tạo bài viết mới
 
-POST http://localhost:3000/api/posts/0253211e-e70f-4fe9-9468-15f554c6ad81/upvote
+POST http://localhost:3000/api/posts/175952fd-0ca9-440e-9538-2529833c4611/upvote
 
 ### Upvote bài viết có id là postId
 
 
-POST http://localhost:3000/api/posts/0253211e-e70f-4fe9-9468-15f554c6ad81/downvote
+POST http://localhost:3000/api/posts/175952fd-0ca9-440e-9538-2529833c4611/downvote
 
 ### Downvote bài viết có id là postId
+
+POST http://localhost:3000/api/posts/59928e6b-d2c8-4620-b699-028ca0811afe/save
+
+### Lưu bài viết có id là postId
 
 GET http://localhost:3000/api/posts/59928e6b-d2c8-4620-b699-028ca0811afe/comments
 
@@ -80,11 +84,15 @@ GET http://localhost:3000/api/users/867940fd-37f4-4120-b20a-ed64a39c9434/follows
 
 ### Lấy danh sách sự kiện mà user có id là userId đang theo dõi
 
+GET http://localhost:3000/api/users/867940fd-37f4-4120-b20a-ed64a39c9434/posts?status=saved
+
+### Lấy danh sách bài viết mà user có id là userId đã lưu
+
 POST http://localhost:3000/api/users/login
 Content-Type: application/json
     
     {
-        "username": "tuan",
+        "username": "tuanne",
         "password": "12345678"
     }
 
@@ -101,3 +109,7 @@ Content-Type: application/json
     }
 
 ### Đăng ký
+
+GET http://localhost:3000/api/notifications?top=10
+
+### Lấy danh sách thông báo, x là số lượng thông báo cần lấy

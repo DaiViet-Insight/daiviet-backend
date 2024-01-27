@@ -12,4 +12,18 @@ module.exports = {
             throw new Error(`Error creating post event: ${error.message}`);
         }
     },
+    getPostIdsByEventId: async (eventId) => {
+        try {
+            const postIds = await PostEvent.findAll({
+                where: {
+                    eventId: eventId,
+                },
+                attributes: ["postId"],
+            });
+            const postIdArray = postIds.map((postEvent) => postEvent.postId);
+            return postIdArray;
+        } catch (error) {
+            throw new Error(`Error getting post event: ${error.message}`);
+        }
+    },
 };

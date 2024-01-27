@@ -1,6 +1,8 @@
 const { PostVote } = require("../models");
 const postService = require("./postService");
 const Sequelize = require("sequelize");
+const eventService = require("./eventService");
+const post_eventService = require("./post_event_Service");
 
 module.exports = {
     create: async (userId, postId, value) => {
@@ -55,6 +57,7 @@ module.exports = {
                 attributes: ["postId"],
             });
             const postIdArray = postIds.map((postVote) => postVote.postId);
+            if(postIdArray.length === 0) return [];
             const posts = await postService.getAllPostByIds(postIdArray);
             return posts;
         } catch (error) {
@@ -63,7 +66,7 @@ module.exports = {
             );
         }
     },
-    getPostsHot: async (size, postId) => {
+    getPostsHot: async (size, postId, eventId) => {
         try {
             const postIds = await PostVote.findAll({
                 attributes: [
@@ -79,24 +82,37 @@ module.exports = {
                 limit: size,
                 order: [[Sequelize.literal("vote_difference"), "DESC"]],
             });
+
+            let selectedIds = postIds.map((post) => post.postId);
+
             if (postId) {
                 const index = postIds.findIndex(
                     (post) => post.postId === postId
                 );
-                if (index != -1) {
-                    const selectedIds = postIds
+                if (index !== -1) {
+                    selectedIds = postIds
                         .slice(index + 1, index + 1 + size)
                         .map((post) => post.postId);
-                    const posts = await postService.getAllPostByIds(
-                        selectedIds
-                    );
-                    return posts;
+                    if (selectedIds.length === 0) return [];
                 }
-            } else {
-                const selectedIds = postIds.map((post) => post.postId);
-                const posts = await postService.getAllPostByIds(selectedIds);
-                return posts;
             }
+            if (eventId) {
+                const event = await eventService.getEventById(eventId);
+
+                if (!event) {
+                    throw new Error("Sự kiện không tồn tại");
+                }
+
+                const postIdsByEventId =
+                    await post_eventService.getPostIdsByEventId(eventId);
+
+                // Lọc ra các postId từ postIds có trong postIdsByEventId
+                selectedIds = postIds
+                    .filter((post) => postIdsByEventId.includes(post.postId))
+                    .map((post) => post.postId);
+            }
+            const posts = await postService.getAllPostByIds(selectedIds);
+            return posts;
         } catch (error) {
             throw new Error(
                 `Error fetching posts by user ID: ${error.message}`

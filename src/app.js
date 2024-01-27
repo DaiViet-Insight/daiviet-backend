@@ -15,6 +15,7 @@ const userRoutes = require("./routes/user");
 const commentRoutes = require("./routes/comment");
 const eventRoutes = require("./routes/event");
 const lectureRoutes = require("./routes/lecture");
+const notificationRoutes = require("./routes/notification");
 
 // CORS error handling
 app.use((req, res, next) => {
@@ -49,6 +50,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/lectures", lectureRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 router.get("/", (req, res, next) => {
     res.send("Server is running ...");
