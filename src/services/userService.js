@@ -17,7 +17,7 @@ module.exports = {
                     statusCode: 401,
                 });
             }
-
+            
             const token = jwt.sign(
                 {
                     id: user.id,
@@ -32,7 +32,7 @@ module.exports = {
                     expiresIn: "1h",
                 }
             );
-
+            console.log(token);
             const result = {
                 message: "Auth successful",
                 token: token,
@@ -40,6 +40,7 @@ module.exports = {
 
             return result;
         } catch (error) {
+            console.log(error);
             return Promise.reject({
                 message: "Internal Server Error",
                 statusCode: 500,

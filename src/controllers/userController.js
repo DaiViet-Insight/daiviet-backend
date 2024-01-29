@@ -6,7 +6,7 @@ module.exports = {
     login: async (req, res) => {
         try {
             const result = await userService.login(req.body);
-
+            console.log(result);
             // Check if the result contains an error property
             if (result.error) {
                 res.status(result.statusCode || 500).json({

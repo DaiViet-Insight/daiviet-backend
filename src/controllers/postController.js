@@ -12,11 +12,14 @@ module.exports = {
         const limit = parseInt(req.query.size);
         const eventId = req.query.eventId;
         let userId = req.userId;
-        console.log(userId);
         if (!userId) {
-            userId = jwtService.decodeToken(req.session.token).id;
+            if(req.session.token != null) {
+                userId = jwtService.decodeToken(req.session.token).id;
+            }
+            else {
+                res.status(500).json({ error: "Lỗi không có userID" });
+            }
         }
-        console.log(userId);
         try {
             let posts;
             if (type === "new") {
