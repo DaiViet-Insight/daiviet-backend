@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const userMiddleware = require("./middleware/user.middleware");
+const path = require('path');
+const multer = require('multer');
 const session = require("express-session");
 const morgan = require("morgan");
 app.use(morgan("dev"));
@@ -10,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const router = express.Router();
+const file = require('./routes/file.js');
 const postRoutes = require("./routes/post");
 const userRoutes = require("./routes/user");
 const commentRoutes = require("./routes/comment");
@@ -33,6 +36,8 @@ app.use((req, res, next) => {
     }
     next();
 });
+
+app.use('/file', file);
 
 // Session
 app.use(
