@@ -14,6 +14,7 @@ router.post("/:postId/save", postController.savePost);
 router.post("/:postId/upvote", postController.upvotePost);
 router.post("/:postId/downvote", postController.downvotePost);
 router.use("/:postId/comments", commentRoutes);
+router.use("/:postId", postController.getDetailPost);
 router.post("/:create", postController.createPost);
 router.get("/", postController.getInfoPost);
 

@@ -1,4 +1,4 @@
-const { Comment } = require("../models");
+const { Comment, User, CommentVote } = require("../models");
 const { Op } = require("sequelize");
 const { Sequelize } = require("sequelize");
 const postService = require("./postService");
@@ -7,13 +7,67 @@ const post_eventService = require("./post_event_Service");
 const userService = require("./userService");
 
 module.exports = {
-    getAllCommentByPostId: async (postId) => {
+    getAllCommentByPostId: async (postId, currentUserID) => {
         try {
             const comments = await Comment.findAll({
                 where: {
                     postId: postId,
                 },
+                include: [
+                    {
+                        model: User,
+                        attributes: ["id", "fullname", "avatar"],
+                    },
+                ],
             });
+
+            // Lấy số lượng upvote, downvote và tính toán tổng số vote cho mỗi comment
+            for (let comment of comments) {
+                const upvotes = await CommentVote.count({
+                    where: {
+                        commentId: comment.id,
+                        voteTypeId: 1, // upvote
+                    },
+                });
+
+                const downvotes = await CommentVote.count({
+                    where: {
+                        commentId: comment.id,
+                        voteTypeId: 2, // downvote
+                    },
+                });
+
+                // Tính tổng số vote bằng cách trừ số lượng downvote từ số lượng upvote
+                const totalVotes = upvotes - downvotes;
+
+                // Thêm thông tin về số upvote, downvote và tổng số vote vào mỗi comment
+                comment.dataValues.upvotesCount = upvotes;
+                comment.dataValues.downvotesCount = downvotes;
+                comment.dataValues.voteCount = totalVotes;
+
+                // Kiểm tra xem người dùng hiện tại đã upvote/downvote comment này chưa
+                const currentUserUpvoted = await CommentVote.findOne({
+                    where: {
+                        commentId: comment.id,
+                        userId: currentUserID,
+                        voteTypeId: 1, // upvote
+                    },
+                });
+
+                const currentUserDownvoted = await CommentVote.findOne({
+                    where: {
+                        commentId: comment.id,
+                        userId: currentUserID,
+                        voteTypeId: 2, // downvote
+                    },
+                });
+
+                // Thêm thông tin về việc người dùng hiện tại đã upvote/downvote comment này hay chưa
+                comment.dataValues.currentUserUpvoted = !!currentUserUpvoted;
+                comment.dataValues.currentUserDownvoted =
+                    !!currentUserDownvoted;
+            }
+
             return comments;
         } catch (error) {
             throw new Error(
@@ -21,6 +75,7 @@ module.exports = {
             );
         }
     },
+
     getCommentById: async (commentId) => {
         try {
             const comment = await Comment.findByPk(commentId);

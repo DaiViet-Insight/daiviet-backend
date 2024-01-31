@@ -13,13 +13,8 @@ module.exports = {
         const eventId = req.query.eventId;
         let userId = req.userId;
         if (!userId) {
-            if (req.session.token != null) {
-                const token = req.headers.authorization.substring(7);
-                userId = jwtService.decodeToken(token).id;
-            } else {
-                res.status(500).json({ error: "Lỗi không có userID" });
-                return;
-            }
+            const token = req.headers.authorization.substring(7);
+            userId = jwtService.decodeToken(token).id;
         }
         try {
             let posts;
@@ -84,7 +79,8 @@ module.exports = {
         try {
             const postId = req.params.postId;
             await PostVoteService.create(
-                jwtService.decodeToken(req.session.token).id,
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id,
                 postId,
                 1
             );
@@ -97,7 +93,8 @@ module.exports = {
         try {
             const postId = req.params.postId;
             await PostVoteService.create(
-                jwtService.decodeToken(req.session.token).id,
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id,
                 postId,
                 2
             );
@@ -111,11 +108,25 @@ module.exports = {
             const postId = req.params.postId;
             const result = await PostSaveService.create(
                 postId,
-                jwtService.decodeToken(req.session.token).id
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id
             );
             if (result === null) {
                 res.send("Xóa bài viết thành công !!!");
             } else res.send("Lưu bài viết thành công !!!");
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    getDetailPost: async (req, res) => {
+        try {
+            const postId = req.params.postId;
+            const post = await PostService.getDetailPost(
+                postId,
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id
+            );
+            res.send(post);
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

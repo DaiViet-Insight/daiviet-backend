@@ -13,7 +13,7 @@ module.exports = {
     },
     followEvent: async (req, res) => {
         try {
-            const userId = jwtService.decodeToken(req.session.token).id;
+            const userId = jwtService.decodeToken(req.headers.authorization.substring(7)).id;
             const eventId = req.params.eventId;
             await FollowService.followEvent(eventId, userId);
             res.status(200).json("Follow event successfully");
