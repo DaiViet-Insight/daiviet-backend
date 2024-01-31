@@ -70,6 +70,17 @@ GET http://localhost:3000/api/lectures?eventId=bc618a64-25f9-44dd-91b5-f8251f3bf
 
 GET http://localhost:3000/api/lectures/d9e0d6d4-6a9f-4c6a-9f8f-8f4a7f5f8f4a
 
+
+### POST lectures
+POST http://localhost:3000/api/lectures
+
+### EDIT 
+
+
+### DELETE 
+
+
+
 ### Lấy bài giảng có id là id
 
 GET http://localhost:3000/api/users/71fdfcf5-99b3-4892-a626-5e73f96cd89d/posts?status=upvoted
