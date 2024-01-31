@@ -13,10 +13,9 @@ module.exports = {
         const eventId = req.query.eventId;
         let userId = req.userId;
         if (!userId) {
-            if(req.session.token != null) {
+            if (req.session.token != null) {
                 userId = jwtService.decodeToken(req.session.token).id;
-            }
-            else {
+            } else {
                 res.status(500).json({ error: "Lỗi không có userID" });
             }
         }
@@ -51,11 +50,12 @@ module.exports = {
     createPost: async (req, res) => {
         try {
             const data = req.body;
+            const token = req.headers.authorization.substring(7);
             await PostService.createPost(
                 data.title,
                 data.content,
                 data.eventIds,
-                jwtService.decodeToken(req.session.token).id
+                jwtService.decodeToken(token).id
             );
             res.send("Tạo bài viết thành công !!!");
         } catch (error) {

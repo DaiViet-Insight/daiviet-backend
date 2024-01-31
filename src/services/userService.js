@@ -29,7 +29,7 @@ module.exports = {
                 },
                 "secret",
                 {
-                    expiresIn: "1h",
+                    expiresIn: "24h",
                 }
             );
             console.log(token);

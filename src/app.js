@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-
+const userMiddleware = require("./middleware/user.middleware");
 const session = require("express-session");
 const morgan = require("morgan");
 app.use(morgan("dev"));
@@ -46,11 +46,11 @@ app.use(
 
 app.use("/api", router);
 app.use("/api/users", userRoutes);
-app.use("/api/posts", postRoutes);
-app.use("/api/comments", commentRoutes);
+app.use("/api/posts", userMiddleware.Validate, postRoutes);
+app.use("/api/comments", userMiddleware.Validate, commentRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/lectures", lectureRoutes);
-app.use("/api/notifications", notificationRoutes);
+app.use("/api/notifications", userMiddleware.Validate, notificationRoutes);
 
 router.get("/", (req, res, next) => {
     res.send("Server is running ...");
