@@ -54,11 +54,12 @@ module.exports = {
     createPost: async (req, res) => {
         try {
             const data = req.body;
+            const token = req.headers.authorization.substring(7);
             await PostService.createPost(
                 data.title,
                 data.content,
                 data.eventIds,
-                jwtService.decodeToken(req.session.token).id
+                jwtService.decodeToken(token).id
             );
             res.send("Tạo bài viết thành công !!!");
         } catch (error) {

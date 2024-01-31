@@ -1,9 +1,9 @@
 {
   "development": {
     "username": "root",
-    "password": "melicom@12345",
-    "database": "DaiViet",
-    "host": "172.174.176.159",
+    "password": "",
+    "database": "daiviet",
+    "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
