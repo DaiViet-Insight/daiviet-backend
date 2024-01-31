@@ -4,6 +4,7 @@ const { Sequelize } = require("sequelize");
 const postService = require("./postService");
 const eventService = require("./eventService");
 const post_eventService = require("./post_event_Service");
+const userService = require("./userService");
 
 module.exports = {
     getAllCommentByPostId: async (postId) => {
@@ -70,9 +71,9 @@ module.exports = {
                     `commentCount < ${afterPostCommentCount}`
                 );
 
-                conditions.push = {
-                    [Op.not]: postId,
-                };
+                conditions.push({
+                    postId: { [Op.not]: postId },
+                });
             }
 
             if (eventId) {
@@ -86,20 +87,38 @@ module.exports = {
                     eventId
                 );
 
-                conditions.push = {
-                    [Op.in]: postIds,
-                };
+                conditions.push({
+                    postId: { [Op.in]: postIds },
+                });
             }
 
             if (conditions.length > 0) {
-                queryOptions.where.postId = conditions;
+                queryOptions.where = {
+                    [Op.and]: conditions,
+                };
             }
 
             const postIds = await Comment.findAll(queryOptions);
 
             const postIdArray = postIds.map((comment) => comment.postId);
             if (postIdArray.length === 0) return [];
-            const posts = await postService.getAllPostByIds(postIdArray);
+
+            // Lấy thông tin về người đăng bài
+            let posts = await postService.getAllPostByIds(postIdArray);
+
+            // Lấy thông tin về người đăng bài
+            for (let i = 0; i < posts.length; i++) {
+                const user = await userService.getUserById(posts[i].postedBy);
+
+                // Thêm thông tin người đăng bài là một thuộc tính của bài viết
+                posts[i].dataValues.user = {
+                    id: user.id,
+                    fullname: user.fullname,
+                    avatar: user.avatar,
+                };
+                console.log(posts[i]);
+            }
+
             return posts;
         } catch (error) {
             throw new Error(`Lỗi khi lấy bài viết mới nhất: ${error.message}`);

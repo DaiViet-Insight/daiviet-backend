@@ -3,6 +3,7 @@ const postService = require("./postService");
 const Sequelize = require("sequelize");
 const eventService = require("./eventService");
 const post_eventService = require("./post_event_Service");
+const userService = require("./userService");
 
 module.exports = {
     create: async (userId, postId, value) => {
@@ -57,7 +58,7 @@ module.exports = {
                 attributes: ["postId"],
             });
             const postIdArray = postIds.map((postVote) => postVote.postId);
-            if(postIdArray.length === 0) return [];
+            if (postIdArray.length === 0) return [];
             const posts = await postService.getAllPostByIds(postIdArray);
             return posts;
         } catch (error) {
@@ -66,21 +67,27 @@ module.exports = {
             );
         }
     },
-    getPostsHot: async (size, postId, eventId) => {
+    getPostsHot: async (size, postId, eventId, currentUserID) => {
         try {
             const postIds = await PostVote.findAll({
                 attributes: [
                     "postId",
                     [
                         Sequelize.literal(
-                            "(SUM(CASE WHEN voteTypeId = 1 THEN 1 ELSE 0 END) - SUM(CASE WHEN voteTypeId = 2 THEN 1 ELSE 0 END))"
+                            "SUM(CASE WHEN voteTypeId = 1 THEN 1 ELSE 0 END)"
                         ),
-                        "vote_difference",
+                        "upvotes",
+                    ],
+                    [
+                        Sequelize.literal(
+                            "SUM(CASE WHEN voteTypeId = 2 THEN 1 ELSE 0 END)"
+                        ),
+                        "downvotes",
                     ],
                 ],
                 group: ["postId"],
                 limit: size,
-                order: [[Sequelize.literal("vote_difference"), "DESC"]],
+                order: [[Sequelize.literal("(upvotes - downvotes)"), "DESC"]],
             });
 
             let selectedIds = postIds.map((post) => post.postId);
@@ -111,7 +118,65 @@ module.exports = {
                     .filter((post) => postIdsByEventId.includes(post.postId))
                     .map((post) => post.postId);
             }
+
+            // Lấy thông tin về người đăng bài từ bảng User
             const posts = await postService.getAllPostByIds(selectedIds);
+            const users = await userService.getAllUser();
+
+            // Lấy thông tin về vote của currentUserID cho các bài post
+            const currentUserVotes = await PostVote.findAll({
+                where: {
+                    userId: currentUserID,
+                    postId: selectedIds,
+                },
+                attributes: ["postId", "voteTypeId"],
+            });
+
+            // Gán thông tin về người đăng bài và số lượng upvote, downvote cho mỗi bài viết
+            posts.forEach((post) => {
+                const user = users.find((user) => user.id === post.postedBy);
+                if (user) {
+                    post.dataValues.User = {
+                        id: user.id,
+                        fullname: user.fullname,
+                        avatar: user.avatar,
+                    };
+                }
+
+                post.dataValues.upvotesCount = 0;
+                post.dataValues.downvotesCount = 0;
+                post.dataValues.voteCount = 0;
+                post.dataValues.currentUserUpvoted = false;
+                post.dataValues.currentUserDownvoted = false;
+
+                if (postIds.length > 0) {
+                    const voteData = postIds.find(
+                        (item) => item.postId === post.id
+                    );
+                    if (voteData !== undefined) {
+                        post.dataValues.upvotesCount =
+                            voteData.dataValues.upvotes;
+                        post.dataValues.downvotesCount =
+                            voteData.dataValues.downvotes;
+                        post.dataValues.voteCount =
+                            voteData.dataValues.upvotes -
+                            voteData.dataValues.downvotes;
+                    }
+                }
+
+                if (currentUserVotes.length > 0) {
+                    const userVote = currentUserVotes.find(
+                        (vote) => vote.postId === post.id
+                    );
+                    if (userVote !== undefined) {
+                        post.dataValues.currentUserUpvoted =
+                            userVote && userVote.dataValues.voteTypeId === 1;
+                        post.dataValues.currentUserDownvoted =
+                            userVote && userVote.dataValues.voteTypeId === 2;
+                    }
+                }
+            });
+
             return posts;
         } catch (error) {
             throw new Error(
