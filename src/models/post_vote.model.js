@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     voteTypeId: {
       type: DataTypes.INTEGER,
-      primaryKey: true
+      primaryKey: false
     },
   }, {
     sequelize,
