@@ -2,16 +2,21 @@ const lectureEventService = require("../services/lecture_event_Service");
 const lectureService = require("../services/lectureService");
 
 module.exports = {
-    getLectureByEventId: async (req, res) => {
+    getLectures: async (req, res) => {
         try {
-            const eventId = req.query.eventId;
-            const size = parseInt(req.query.size);
-            const lectures = await lectureEventService.getLectureByEventId(
+            const eventId = req.query.eventId || null;
+            const size = parseInt(req.query.size)|| 10;
+            
+            
+            const lectures = await lectureEventService.getLectures(
                 eventId,
                 size
             );
             res.status(200).json(lectures);
-        } catch (error) {
+        } 
+        
+        
+        catch (error) {
             res.status(error.statusCode || 500).json({ error: error.message });
         }
     },
