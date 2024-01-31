@@ -24,6 +24,8 @@ module.exports = {
         try {
             const lectureId = req.params.id;
             const lecture = await lectureService.getLectureById(lectureId);
+            
+
             res.status(200).json(lecture);
         } catch (error) {
             res.status(error.statusCode || 500).json({ error: error.message });
