@@ -103,4 +103,20 @@ module.exports = {
             throw new Error(`Lỗi khi lấy bài viết: ${error.message}`);
         }
     },
+    getOtherPostIds: async (postIdArray) => {
+        try {
+            const otherPostIds = await Post.findAll({
+                attributes: ["id"],
+                where: {
+                    id: { [Sequelize.Op.notIn]: postIdArray },
+                },
+            });
+            const otherPostIdsArray = otherPostIds.map((post) => post.id);
+            return otherPostIdsArray;
+        } catch (error) {
+            throw new Error(
+                `Lỗi khi lấy danh sách ID bài post khác: ${error.message}`
+            );
+        }
+    },
 };

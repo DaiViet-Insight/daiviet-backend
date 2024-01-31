@@ -3,9 +3,9 @@ const { NotificationPost } = require("../models");
 const Sequelize = require("sequelize");
 
 module.exports = {
-    getAllNotification: async (size) => {
+    getAllNotification: async (size, postedBy) => {
         try {
-            const posts = await NotificationPost.findAll({
+            const postQuery = {
                 attributes: [
                     "id",
                     ["postId", "post_id"],
@@ -13,9 +13,9 @@ module.exports = {
                     [Sequelize.literal("NULL"), "comment_id"],
                     ["createdAt", "createdAt"],
                 ],
-            });
+            };
 
-            const comments = await NotificationComment.findAll({
+            const commentQuery = {
                 attributes: [
                     "id",
                     [Sequelize.literal("NULL"), "post_id"],
@@ -23,7 +23,15 @@ module.exports = {
                     "commentId",
                     "createdAt",
                 ],
-            });
+            };
+
+            if (postedBy) {
+                postQuery.where = { postedBy: postedBy };
+                commentQuery.where = { postedBy: postedBy };
+            }
+
+            const posts = await NotificationPost.findAll(postQuery);
+            const comments = await NotificationComment.findAll(commentQuery);
 
             const results = posts
                 .concat(comments)

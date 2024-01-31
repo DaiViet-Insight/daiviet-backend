@@ -66,13 +66,13 @@ module.exports = {
                     where: { postId: postId },
                 });
 
+                conditions.push({
+                    [Op.not]: postId,
+                });
+
                 queryOptions.having = Sequelize.literal(
                     `commentCount < ${afterPostCommentCount}`
                 );
-
-                conditions.push = {
-                    [Op.not]: postId,
-                };
             }
 
             if (eventId) {
@@ -86,20 +86,26 @@ module.exports = {
                     eventId
                 );
 
-                conditions.push = {
+                conditions.push({
                     [Op.in]: postIds,
-                };
+                });
             }
 
             if (conditions.length > 0) {
-                queryOptions.where.postId = conditions;
+                queryOptions.where = {
+                    [Op.and]: conditions,
+                };
             }
 
             const postIds = await Comment.findAll(queryOptions);
 
-            const postIdArray = postIds.map((comment) => comment.postId);
+            let postIdArray = postIds.map((comment) => comment.postId);
+            const otherPostIds = await postService.getOtherPostIds(postIdArray);
+            postIdArray = postIdArray.concat(otherPostIds);
             if (postIdArray.length === 0) return [];
+            // Lấy danh sách bài viết theo postIdArray
             const posts = await postService.getAllPostByIds(postIdArray);
+
             return posts;
         } catch (error) {
             throw new Error(`Lỗi khi lấy bài viết mới nhất: ${error.message}`);
