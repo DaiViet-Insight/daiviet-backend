@@ -12,7 +12,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       models.Lecture.belongsTo(models.User, {
-          foreignKey: 'authorId'
+        foreignKey: 'authorId'
+    });
+      models.Lecture.belongsToMany(models.Event, {
+          through: models.LectureEvent,
+          foreignKey: 'lectureId'
       });
     }
   }
