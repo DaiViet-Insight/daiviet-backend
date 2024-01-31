@@ -1,0 +1,126 @@
+GET http://localhost:3000/api/posts?type=new&size=7&eventId=bc618a64-25f9-44dd-91b5-f8251f3bf6b9&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
+
+### Lấy x bài viết mới nhất sau bài viết có afterPostId
+
+GET http://localhost:3000/api/posts?type=hot&size=10&eventId=bc618a64-25f9-44dd-91b5-f8251f3bf6b9&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
+
+### Lấy x bài viết hot nhất sau bài viết có afterPostId
+
+GET http://localhost:3000/api/posts?type=top&size=10&eventId=bc618a64-25f9-44dd-91b5-f8251f3bf6b9&afterPost=59928e6b-d2c8-4620-b699-028ca0811afe
+
+### Lấy x bài viết top nhất sau bài viết có afterPostId
+
+POST http://localhost:3000/api/posts/create
+Content-Type: application/json
+
+{
+    "title": "title10",
+    "content": "content",
+    "eventIds": ["bc618a64-25f9-44dd-91b5-f8251f3bf6b9"]
+}
+
+### Tạo bài viết mới
+
+POST http://localhost:3000/api/posts/175952fd-0ca9-440e-9538-2529833c4611/upvote
+
+### Upvote bài viết có id là postId
+
+
+POST http://localhost:3000/api/posts/175952fd-0ca9-440e-9538-2529833c4611/downvote
+
+### Downvote bài viết có id là postId
+
+POST http://localhost:3000/api/posts/59928e6b-d2c8-4620-b699-028ca0811afe/save
+
+### Lưu bài viết có id là postId
+
+GET http://localhost:3000/api/posts/59928e6b-d2c8-4620-b699-028ca0811afe/comments
+
+### Lấy danh sách comment của bài viết có id là postId
+
+POST http://localhost:3000/api/posts/0253211e-e70f-4fe9-9468-15f554c6ad81/comments/create
+Content-Type: application/json
+    
+    {
+        "content": "content1",
+        "rootCommentId": "7e67418e-4531-49d2-8c79-f79f310d009b"
+    }
+
+### Tạo comment cho bài viết có id là postId
+
+POST http://localhost:3000/api/comments/095f3362-a295-416a-8aa9-93547636c716/upvote
+
+### Upvote comment có id là commentId
+
+POST http://localhost:3000/api/comments/095f3362-a295-416a-8aa9-93547636c716/downvote
+
+### Downvote comment có id là commentId
+
+GET http://localhost:3000/api/events
+
+### Lấy danh sách sự kiện
+
+POST http://localhost:3000/api/events/bc618a64-25f9-44dd-91b5-f8251f3bf6b9/follow
+
+### Theo dõi sự kiện có id là eventId
+
+GET http://localhost:3000/api/lectures?eventId=bc618a64-25f9-44dd-91b5-f8251f3bf6b9&size=1
+
+### Lấy danh sách bài giảng của sự kiện có id là eventId
+
+GET http://localhost:3000/api/lectures/d9e0d6d4-6a9f-4c6a-9f8f-8f4a7f5f8f4a
+
+
+### POST lectures
+POST http://localhost:3000/api/lectures
+
+### EDIT 
+
+
+### DELETE 
+
+
+
+### Lấy bài giảng có id là id
+
+GET http://localhost:3000/api/users/71fdfcf5-99b3-4892-a626-5e73f96cd89d/posts?status=upvoted
+
+### Lấy danh sách bài viết mà user có id là userId đã upvote
+
+GET http://localhost:3000/api/users/71fdfcf5-99b3-4892-a626-5e73f96cd89d/posts?status=downvoted
+
+### Lấy danh sách bài viết mà user có id là userId đã downvoted
+
+GET http://localhost:3000/api/users/867940fd-37f4-4120-b20a-ed64a39c9434/follows
+
+### Lấy danh sách sự kiện mà user có id là userId đang theo dõi
+
+GET http://localhost:3000/api/users/867940fd-37f4-4120-b20a-ed64a39c9434/posts?status=saved
+
+### Lấy danh sách bài viết mà user có id là userId đã lưu
+
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+    
+    {
+        "username": "tuanne",
+        "password": "12345678"
+    }
+
+### Đăng nhập
+
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+    {
+        "username": "truongne",
+        "password": "12345678",
+        "fullname": "Mai Xuan Truong",
+        "birthday": "2003-03-31"
+    }
+
+### Đăng ký
+
+GET http://localhost:3000/api/notifications?top=10
+
+### Lấy danh sách thông báo, x là số lượng thông báo cần lấy

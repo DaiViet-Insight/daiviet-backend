@@ -35,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     postedBy: {
       type: DataTypes.UUID
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   }, {
     sequelize,

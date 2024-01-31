@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
     },
-    description: {
+    videoURL: {
         type: DataTypes.STRING(256)
     },
     thumbnail: {
@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
         authorId: '867940fd-37f4-4120-b20a-ed64a39c9434',
         title: 'Lịch sử Việt Nam',
         content: 'Lịch sử Việt Nam',
-        description: 'Lịch sử Việt Nam',
+        videoURL: 'https://www.youtube.com/embed/zgR6nH84wsQ',
         thumbnail: 'https://tuyengiao.hagiang.gov.vn/upload/64711/20220818/Nhan_dan_ta_vui_mung_phan_khoi_sau_Cach_mang_Thang_8_f411f.jpg'
       }
     ]);
