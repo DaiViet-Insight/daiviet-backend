@@ -22,7 +22,6 @@ module.exports = {
                 videoURL: req.body.videoURL,
                 thumbnail: req.body.thumbnail,                
             };
-
             const newLecture = await Lecture.create(LectureObject);
 
             for (let i = 0; i < events.length; i++) {
