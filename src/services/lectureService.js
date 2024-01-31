@@ -1,4 +1,4 @@
-const { Lecture } = require("../models");
+const { Lecture, User , Event, LectureEvent} = require("../models");
 const eventService = require("./eventService");
 const lecture_eventService = require("./lecture_event_Service");
 const jwt = require("jsonwebtoken");
@@ -50,10 +50,28 @@ module.exports = {
     },
     getLectureById: async (lectureId) => {
         try {
+            console.log("get by id")
             const lecture = await Lecture.findOne({
+                include :
+                [
+                    {
+                        model: User,
+                        attributes: ["id", "fullname","username", "avatar"],
+                    },
+
+                    {
+                        model: Event,
+                        attributes: ["id", "name"],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                ],
                 where: {
                     id: lectureId,
+
                 },
+
             });
             return lecture;
         } catch (error) {
