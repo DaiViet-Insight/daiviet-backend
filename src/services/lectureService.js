@@ -7,13 +7,12 @@ module.exports = {
         try {
             const eventIds = req.body.eventIds || [];
             const events = await eventService.getAllEventByIds(eventIds);
+    
             if (eventIds.length !== events.length) {
                 throw new Error("Sự kiện không tồn tại");
             }
             const token = req.headers.authorization.substring(7);
             const decoded = jwt.verify(token, "secret");
-
-
 
             let LectureObject = {
                 title: req.body.title,
@@ -26,7 +25,10 @@ module.exports = {
             const newLecture = await Lecture.create(LectureObject);
 
             for (let i = 0; i < events.length; i++) {
-                await lecture_eventService.createEventLecture(newLecture.id, events[i].id);
+                await LectureEvent.create({
+                    lectureId: newLecture.id,
+                    EventId: events[i].id,
+                });
             }
 
             return newLecture;
@@ -50,7 +52,6 @@ module.exports = {
     },
     getLectureById: async (lectureId) => {
         try {
-            console.log("get by id")
             const lecture = await Lecture.findOne({
                 include :
                 [
