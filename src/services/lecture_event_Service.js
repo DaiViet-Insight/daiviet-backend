@@ -2,6 +2,25 @@ const { LectureEvent } = require("../models");
 const lectureService = require("./lectureService");
 
 module.exports = {
+    createEventLecture: async (lectureId,eventId) => {
+        try {
+            
+            // const lectureId = req.body.lectureId;
+            // const eventId = req.body.eventId;
+
+            const lectureEvent = await LectureEvent.create({
+                lectureId: lectureId,
+                eventId: eventId,
+            });
+
+            return lectureEvent;
+        } catch (error) {
+            throw new Error(
+                `Error creating lecture event: ${error.message}`
+            );
+        }
+    }
+    ,
     getLectures: async (eventId, size) => {
         try {
 

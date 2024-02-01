@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
         models.LectureEvent.belongsTo(models.Event, {
-            foreignKey: 'eventId'
+            foreignKey: 'EventId'
         });
 
         models.LectureEvent.belongsTo(models.Lecture, {
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         primaryKey: true
     },
-    eventId: {
+    EventId: {
         type: DataTypes.UUID,
         primaryKey: true
     },
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     await this.bulkCreate([
       { 
         lectureId: 'd9e0d6d4-6a9f-4c6a-9f8f-8f4a7f5f8f4a',
-        eventId: 'bc618a64-25f9-44dd-91b5-f8251f3bf6b9'
+        EventId: 'bc618a64-25f9-44dd-91b5-f8251f3bf6b9'
       }
     ]);
   }
