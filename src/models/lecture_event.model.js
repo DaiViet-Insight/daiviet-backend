@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     EventId: {
         type: DataTypes.UUID,
         primaryKey: true
-    },
+    }
   }, {
     sequelize,
     modelName: 'LectureEvent',

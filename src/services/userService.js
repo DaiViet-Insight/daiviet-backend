@@ -17,7 +17,7 @@ module.exports = {
                     statusCode: 401,
                 });
             }
-            
+
             const token = jwt.sign(
                 {
                     id: user.id,
@@ -75,5 +75,40 @@ module.exports = {
                 statusCode: 500,
             });
         }
-    }
+    },
+    getUserById: async (id) => {
+        try {
+            const user = await User.findByPk(id, {
+                attributes: ["id", "fullname", "avatar"],
+            });
+
+            if (!user) {
+                return Promise.reject({
+                    message: "User not found",
+                    statusCode: 404,
+                });
+            }
+
+            return user;
+        } catch (error) {
+            return Promise.reject({
+                message: "Internal Server Error",
+                statusCode: 500,
+            });
+        }
+    },
+    getAllUser: async () => {
+        try {
+            const users = await User.findAll({
+                attributes: ["id", "fullname", "avatar"],
+            });
+
+            return users;
+        } catch (error) {
+            return Promise.reject({
+                message: "Internal Server Error",
+                statusCode: 500,
+            });
+        }
+    },
 };

@@ -13,7 +13,6 @@ module.exports = {
                     error: result.message,
                 });
             } else {
-                req.session.token = result.token;
                 res.status(200).json(result);
             }
         } catch (error) {
@@ -24,7 +23,9 @@ module.exports = {
         try {
             let userId = req.params.userId;
             if (!userId) {
-                userId = jwtService.decodeToken(req.session.token).id;
+                userId = jwtService.decodeToken(
+                    req.headers.authorization.substring(7)
+                ).id;
             }
             const events = await followService.getEventsByUserId(userId);
             res.status(200).json(events);

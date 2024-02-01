@@ -6,7 +6,9 @@ module.exports = {
     getAllCommentByPostId: async (req, res) => {
         try {
             const comments = await CommentService.getAllCommentByPostId(
-                req.postId
+                req.postId,
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id
             );
             res.send(comments);
         } catch (error) {
@@ -21,7 +23,8 @@ module.exports = {
                 postId,
                 data.content,
                 data.rootCommentId,
-                jwtService.decodeToken(req.session.token).id
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id
             );
             res.send("Tạo comment thành công !!!");
         } catch (error) {
@@ -32,7 +35,8 @@ module.exports = {
         try {
             const commentId = req.params.id;
             await CommentVoteService.create(
-                jwtService.decodeToken(req.session.token).id,
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id,
                 commentId,
                 1
             );
@@ -45,7 +49,8 @@ module.exports = {
         try {
             const commentId = req.params.id;
             await CommentVoteService.create(
-                jwtService.decodeToken(req.session.token).id,
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id,
                 commentId,
                 2
             );

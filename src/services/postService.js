@@ -1,15 +1,21 @@
 const { Sequelize } = require("sequelize");
-const { Post } = require("../models");
+const { Post, User, PostVote } = require("../models");
 const eventService = require("./eventService");
 const post_eventService = require("./post_event_Service");
 
 module.exports = {
-    getNewPost: async (limit, postId, eventId) => {
+    getNewPost: async (limit, postId, eventId, currentUserID) => {
         try {
             let queryOptions = {
                 limit: limit,
                 order: [["createdAt", "DESC"]],
                 where: {},
+                include: [
+                    {
+                        model: User,
+                        attributes: ["id", "fullname", "avatar"],
+                    },
+                ],
             };
             if (postId) {
                 const post = await Post.findByPk(postId);
@@ -40,11 +46,54 @@ module.exports = {
             // Tìm x bài viết mới nhất sau bài viết tham chiếu theo createDate
             const latestPosts = await Post.findAll(queryOptions);
 
+            // Lấy số lượng upvote, downvote và số vote cho mỗi bài viết
+            for (let post of latestPosts) {
+                const upvotesCount = await PostVote.count({
+                    where: {
+                        postId: post.id,
+                        voteTypeId: 1, // 1 là upvote
+                    },
+                });
+                const downvotesCount = await PostVote.count({
+                    where: {
+                        postId: post.id,
+                        voteTypeId: 2, // 2 là downvote
+                    },
+                });
+
+                // Kiểm tra xem currentUserID đã upvote và downvote bài viết này chưa
+                const currentUserUpvoted = await PostVote.findOne({
+                    where: {
+                        postId: post.id,
+                        userId: currentUserID,
+                        voteTypeId: 1, // 1 là upvote
+                    },
+                });
+
+                const currentUserDownvoted = await PostVote.findOne({
+                    where: {
+                        postId: post.id,
+                        userId: currentUserID,
+                        voteTypeId: 2, // 2 là downvote
+                    },
+                });
+
+                post.setDataValue("upvotesCount", upvotesCount);
+                post.setDataValue("downvotesCount", downvotesCount);
+                post.setDataValue("voteCount", upvotesCount - downvotesCount);
+                post.setDataValue("currentUserUpvoted", !!currentUserUpvoted); // Chuyển về kiểu boolean
+                post.setDataValue(
+                    "currentUserDownvoted",
+                    !!currentUserDownvoted
+                ); // Chuyển về kiểu boolean
+            }
+
             return latestPosts;
         } catch (error) {
             throw new Error(`Lỗi khi lấy bài viết mới nhất: ${error.message}`);
         }
     },
+
     createPost: async (title, content, eventIds, postedBy) => {
         try {
             const events = await eventService.getAllEventByIds(eventIds); //Lấy danh sách sự kiện trong
@@ -99,6 +148,70 @@ module.exports = {
                 ],
             });
             return posts;
+        } catch (error) {
+            throw new Error(`Lỗi khi lấy bài viết: ${error.message}`);
+        }
+    },
+    getDetailPost: async (postId, currentUserID) => {
+        try {
+            const post = await Post.findByPk(postId, {
+                include: [
+                    {
+                        model: User,
+                        attributes: ["id", "fullname", "avatar"],
+                    },
+                ],
+            });
+
+            if (!post) {
+                throw new Error("Bài viết không tồn tại");
+            }
+
+            // Đếm số lượng upvote và downvote
+            const upvotes = await PostVote.count({
+                where: {
+                    postId: postId,
+                    voteTypeId: 1, // 1 là upvote
+                },
+            });
+
+            const downvotes = await PostVote.count({
+                where: {
+                    postId: postId,
+                    voteTypeId: 2, // 2 là downvote
+                },
+            });
+
+            // Kiểm tra xem currentUserID đã upvote hoặc downvote bài viết này chưa
+            const currentUserUpvoted = await PostVote.findOne({
+                where: {
+                    postId: postId,
+                    userId: currentUserID,
+                    voteTypeId: 1, // 1 là upvote
+                },
+            });
+
+            const currentUserDownvoted = await PostVote.findOne({
+                where: {
+                    postId: postId,
+                    userId: currentUserID,
+                    voteTypeId: 2, // 2 là downvote
+                },
+            });
+
+            // Tính tổng số vote
+            const totalVotes = upvotes - downvotes;
+
+            // Thêm thông tin về số lượng upvote, downvote và tổng số vote vào đối tượng post
+            post.dataValues.upvotesCount = upvotes;
+            post.dataValues.downvotesCount = downvotes;
+            post.dataValues.voteCount = totalVotes;
+
+            // Thêm thông tin về việc người dùng hiện tại đã upvote hoặc downvote
+            post.dataValues.currentUserUpvoted = !!currentUserUpvoted;
+            post.dataValues.currentUserDownvoted = !!currentUserDownvoted;
+
+            return post;
         } catch (error) {
             throw new Error(`Lỗi khi lấy bài viết: ${error.message}`);
         }
