@@ -28,10 +28,6 @@ module.exports = (sequelize, DataTypes) => {
     EventId: {
         type: DataTypes.UUID,
         primaryKey: true
-    },
-    caiquaigicungduoc:{
-        type: DataTypes.STRING(128),
-        defaultValue: "cai gi cung duoc"
     }
   }, {
     sequelize,
