@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-        models.LectureEvent.belongsTo(models.Event, {
-            foreignKey: 'eventId'
+         models.LectureEvent.belongsTo(models.Event, {
+        foreignKey: 'EventId'
         });
 
         models.LectureEvent.belongsTo(models.Lecture, {
@@ -25,10 +25,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         primaryKey: true
     },
-    eventId: {
+    EventId: {
         type: DataTypes.UUID,
         primaryKey: true
     },
+    caiquaigicungduoc:{
+        type: DataTypes.STRING(128),
+        defaultValue: "cai gi cung duoc"
+    }
   }, {
     sequelize,
     modelName: 'LectureEvent',

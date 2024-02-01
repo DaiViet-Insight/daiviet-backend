@@ -92,6 +92,11 @@ async function initData() {
         truncate: false,
     });
 
+    await db.LectureEventAttachment.destroy({
+        where: {},
+        truncate: false,
+    });
+
     await db.Lecture.destroy({
         where: {},
         truncate: false,
@@ -164,6 +169,7 @@ async function initData() {
     await db.Comment.initData();
     await db.Follow.initData();
     await db.Lecture.initData();
+    await db.LectureEventAttachment.initData();
     await db.LectureEvent.initData();
     await db.VoteType.initData();
     await db.PostVote.initData();
@@ -175,20 +181,21 @@ async function initData() {
     await db.PostSave.initData();
 }
 
-// db.sequelize = sequelize
-//     .authenticate()
-//     .then(() => {
-//         console.log("Database connection established successfully.");
-//         return sequelize.sync({ force: false });
-//     })
-//     .then(() => {
-//         console.log("Models synced successfully.");
-//         return initData();
-//     })
-//     .catch((err) => {
-//         console.error("Unable to connect to the database:", err);
-//     });
+// Connect to the database and then call initData
+db.sequelize = sequelize
+    .authenticate()
+    .then(() => {
+        console.log("Database connection established successfully.");
+        return sequelize.sync({ force: false });
+    })
+    .then(() => {
+        console.log("Models synced successfully.");
+        //return initData();
+    })
+    .catch((err) => {
+        console.error("Unable to connect to the database:", err);
+    });
 
-// db.Sequelize = Sequelize;
+db.Sequelize = Sequelize;
 
 module.exports = db;
