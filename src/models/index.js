@@ -92,11 +92,6 @@ async function initData() {
         truncate: false,
     });
 
-    await db.LectureEventAttachment.destroy({
-        where: {},
-        truncate: false,
-    });
-
     await db.Lecture.destroy({
         where: {},
         truncate: false,
@@ -169,7 +164,6 @@ async function initData() {
     await db.Comment.initData();
     await db.Follow.initData();
     await db.Lecture.initData();
-    await db.LectureEventAttachment.initData();
     await db.LectureEvent.initData();
     await db.VoteType.initData();
     await db.PostVote.initData();
@@ -191,13 +185,12 @@ async function initData() {
 //     })
 //     .then(() => {
 //         console.log("Models synced successfully.");
-//         //return initData();
+//         return initData();
 //     })
 //     .catch((err) => {
 //         console.error("Unable to connect to the database:", err);
 //     });
 
 // db.Sequelize = Sequelize;
-
 
 module.exports = db;

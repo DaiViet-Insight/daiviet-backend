@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, UserRole, Role } = require("../models");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
@@ -18,6 +18,18 @@ module.exports = {
                 });
             }
 
+            const userRole = await UserRole.findOne({
+                where: {
+                    userId: user.id,
+                },
+                include: [
+                    {
+                        model: Role,
+                        attributes: ["roleName"],
+                    },
+                ],
+            });
+
             const token = jwt.sign(
                 {
                     id: user.id,
@@ -26,6 +38,7 @@ module.exports = {
                     createdAt: user.createdAt,
                     birthday: user.birthday,
                     avatar: user.avatar,
+                    role: userRole.Role.roleName,
                 },
                 "secret",
                 {
@@ -79,7 +92,13 @@ module.exports = {
     getUserById: async (id) => {
         try {
             const user = await User.findByPk(id, {
-                attributes: ["id", "fullname", "avatar"],
+                attributes: [
+                    "id",
+                    "fullname",
+                    "createdAt",
+                    "birthday",
+                    "avatar",
+                ],
             });
 
             if (!user) {
@@ -89,7 +108,28 @@ module.exports = {
                 });
             }
 
-            return user;
+            const userRole = await UserRole.findOne({
+                where: {
+                    userId: user.id,
+                },
+                include: [
+                    {
+                        model: Role,
+                        attributes: ["roleName"],
+                    },
+                ],
+            });
+
+            const result = {
+                id: user.id,
+                fullname: user.fullname,
+                createdAt: user.createdAt,
+                birthday: user.birthday,
+                avatar: user.avatar,
+                role: userRole.Role.roleName,
+            };
+
+            return result;
         } catch (error) {
             return Promise.reject({
                 message: "Internal Server Error",

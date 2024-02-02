@@ -2,6 +2,7 @@ const PostService = require("../services/postService");
 const PostVoteService = require("../services/post_vote_Service");
 const PostSaveService = require("../services/post_save_Service");
 const CommentService = require("../services/commentService");
+const ReportPost = require("../services/report_post_Service");
 const jwtService = require("../services/jwtService");
 
 module.exports = {
@@ -195,4 +196,27 @@ module.exports = {
             res.status(500).json({ error: error.message });
         }
     },
+    reportPost: async (req, res) => {
+        try {
+            const postId = req.params.postId;
+            const data = req.body;
+            await ReportPost.reportPost(
+                postId,
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id,
+                data
+            );
+            res.send("Báo cáo bài viết thành công !!!");
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    getReportPost: async (req, res) => {
+        try {
+            const posts = await ReportPost.getReportPost();
+            res.send(posts);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 };

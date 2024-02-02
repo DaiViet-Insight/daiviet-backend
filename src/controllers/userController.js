@@ -49,4 +49,15 @@ module.exports = {
             res.status(error.statusCode || 500).json({ error: error.message });
         }
     },
+    getInformation: async (req, res) => {
+        try {
+            const result = await userService.getUserById(
+                jwtService.decodeToken(req.headers.authorization.substring(7))
+                    .id
+            );
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(error.statusCode || 500).json({ error: error.message });
+        }
+    },
 };
