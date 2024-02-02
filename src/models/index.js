@@ -182,20 +182,20 @@ async function initData() {
 }
 
 // Connect to the database and then call initData
-db.sequelize = sequelize
-    .authenticate()
-    .then(() => {
-        console.log("Database connection established successfully.");
-        return sequelize.sync({ force: false });
-    })
-    .then(() => {
-        console.log("Models synced successfully.");
-        //return initData();
-    })
-    .catch((err) => {
-        console.error("Unable to connect to the database:", err);
-    });
+// db.sequelize = sequelize
+//     .authenticate()
+//     .then(() => {
+//         console.log("Database connection established successfully.");
+//         return sequelize.sync({ force: false });
+//     })
+//     .then(() => {
+//         console.log("Models synced successfully.");
+//         //return initData();
+//     })
+//     .catch((err) => {
+//         console.error("Unable to connect to the database:", err);
+//     });
 
-db.Sequelize = Sequelize;
+// db.Sequelize = Sequelize;
 
 module.exports = db;
