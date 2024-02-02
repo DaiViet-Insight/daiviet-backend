@@ -112,7 +112,7 @@ module.exports = {
                     .id
             );
             if (result === null) {
-                res.send("Xóa bài viết thành công !!!");
+                res.send("Không tồn tại bài viết !!!");
             } else res.send("Lưu bài viết thành công !!!");
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -131,4 +131,63 @@ module.exports = {
             res.status(500).json({ error: error.message });
         }
     },
+    getSavePost: async (req, res) => {
+        try {
+            const userId = jwtService.decodeToken(
+                req.headers.authorization.substring(7)
+            ).id;
+            const posts = await PostSaveService.getPostsByUserId(userId);
+            res.send(posts);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    getUpvotePost: async (req, res) => {
+        try {
+            const userId = jwtService.decodeToken(
+                req.headers.authorization.substring(7)
+            ).id;
+            const posts = await PostVoteService.getPostsByUserId(userId, 1);
+            res.send(posts);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    getDownvotePost: async (req, res) => {
+        try {
+            const userId = jwtService.decodeToken(
+                req.headers.authorization.substring(7)
+            ).id;
+            const posts = await PostVoteService.getPostsByUserId(userId, 2);
+            res.send(posts);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    getUnapprovedPost: async (req, res) => {
+        try {
+            const posts = await PostService.getUnapprovedPost();
+            res.send(posts);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    acceptPost: async (req, res) => {
+        try {
+            const postId = req.params.postId;
+            await PostService.acceptPost(postId);
+            res.send("Duyệt bài viết thành công !!!");
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    rejectPost: async (req, res) => {
+        try {
+            const postId = req.params.postId;
+            await PostService.rejectPost(postId);
+            res.send("Từ chối bài viết thành công !!!");
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 };

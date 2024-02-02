@@ -197,5 +197,6 @@ db.sequelize = sequelize
     });
 
 db.Sequelize = Sequelize;
+db.Sequelize = Sequelize;
 
 module.exports = db;

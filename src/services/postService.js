@@ -216,4 +216,55 @@ module.exports = {
             throw new Error(`Lỗi khi lấy bài viết: ${error.message}`);
         }
     },
+    getUnapprovedPost: async () => {
+        try {
+            const posts = await Post.findAll({
+                where: {
+                    status: 0,
+                },
+                include: [
+                    {
+                        model: User,
+                        attributes: ["id", "fullname", "avatar"],
+                    },
+                ],
+            });
+
+            return posts;
+        } catch (error) {
+            throw new Error(`Lỗi khi lấy bài viết: ${error.message}`);
+        }
+    },
+    acceptPost: async (postId) => {
+        try {
+            const post = await Post.findByPk(postId);
+
+            if (!post) {
+                throw new Error("Bài viết không tồn tại");
+            }
+
+            post.status = 1; // 1 là đã duyệt
+            await post.save();
+
+            return post;
+        } catch (error) {
+            throw new Error(`Lỗi khi duyệt bài viết: ${error.message}`);
+        }
+    },
+    rejectPost: async (postId) => {
+        try {
+            const post = await Post.findByPk(postId);
+
+            if (!post) {
+                throw new Error("Bài viết không tồn tại");
+            }
+
+            post.status = 2; // 2 là từ chối
+            await post.save();
+
+            return post;
+        } catch (error) {
+            throw new Error(`Lỗi khi từ chối duyệt bài viết: ${error.message}`);
+        }
+    },
 };
