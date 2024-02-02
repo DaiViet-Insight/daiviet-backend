@@ -7,7 +7,6 @@ module.exports = {
             const eventId = req.query.eventId || null;
             const size = parseInt(req.query.size)|| 10;
             
-            
             const lectures = await lectureEventService.getLectures(
                 eventId,
                 size
