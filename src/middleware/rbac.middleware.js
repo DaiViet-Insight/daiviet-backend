@@ -8,7 +8,6 @@ const hasPermission = (permission)=>  async (req,res,next) => {
     const token = req.headers.authorization.substring(7);
     const user = jwt.verify(token, 'secret');
     const userRoles = await userRoleService.getRoleByUserId(user.id);     
-        
     const roleNamesPromise = await userRoles.map(role =>  roleService.getRoleName(role.dataValues.roleId));
     const roleNames = await Promise.all(roleNamesPromise)
         

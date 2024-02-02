@@ -5,7 +5,8 @@ const { hasPermission } = require("../middleware/rbac.middleware");
 
 
 // get detail 
-router.get("/", hasPermission("read"),lectureController.getLectures);
+//
+router.get("/",lectureController.getLectures);
 router.get("/:id", lectureController.getLectureById);
 router.post("/", lectureController.createLecture);
 
