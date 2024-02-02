@@ -1,4 +1,4 @@
-const { PostVote } = require("../models");
+const { PostVote, Post, User } = require("../models");
 const postService = require("./postService");
 const Sequelize = require("sequelize");
 const eventService = require("./eventService");
@@ -59,7 +59,43 @@ module.exports = {
             });
             const postIdArray = postIds.map((postVote) => postVote.postId);
             if (postIdArray.length === 0) return [];
-            const posts = await postService.getAllPostByIds(postIdArray);
+
+            // Thực hiện truy vấn kết hợp để lấy thông tin từ cả hai bảng
+            const posts = await Post.findAll({
+                where: {
+                    id: postIdArray,
+                },
+                include: [
+                    {
+                        model: User,
+                        attributes: ["id", "fullname", "avatar"], // Chỉ lấy các trường fullname và avatar
+                    },
+                ],
+            });
+
+            // Tính số lượng upvote, downvote và vote cho mỗi bài đăng
+            for (let i = 0; i < posts.length; i++) {
+                const post = posts[i];
+                const upvotes = await PostVote.count({
+                    where: {
+                        postId: post.id,
+                        voteTypeId: 1, // upvote
+                    },
+                });
+                const downvotes = await PostVote.count({
+                    where: {
+                        postId: post.id,
+                        voteTypeId: 2, // downvote
+                    },
+                });
+                const vote = upvotes - downvotes;
+
+                // Thêm thông tin số upvote, downvote và vote vào mỗi bài đăng
+                post.setDataValue("upvotesCount", upvotes);
+                post.setDataValue("downvotesCount", downvotes);
+                post.setDataValue("voteCount", vote);
+            }
+
             return posts;
         } catch (error) {
             throw new Error(
@@ -67,6 +103,7 @@ module.exports = {
             );
         }
     },
+
     getPostsHot: async (size, postId, eventId, currentUserID) => {
         try {
             const postIds = await PostVote.findAll({
@@ -182,6 +219,41 @@ module.exports = {
             throw new Error(
                 `Error fetching posts by user ID: ${error.message}`
             );
+        }
+    },
+    getPostVotes: async (postIdArray) => {
+        try {
+            const postVotes = await PostVote.findAll({
+                where: {
+                    postId: postIdArray,
+                },
+                attributes: [
+                    "postId",
+                    [
+                        Sequelize.fn(
+                            "SUM",
+                            Sequelize.literal(
+                                "CASE WHEN voteTypeId = 1 THEN 1 ELSE 0 END"
+                            )
+                        ),
+                        "upvotes",
+                    ],
+                    [
+                        Sequelize.fn(
+                            "SUM",
+                            Sequelize.literal(
+                                "CASE WHEN voteTypeId = 2 THEN 1 ELSE 0 END"
+                            )
+                        ),
+                        "downvotes",
+                    ],
+                ],
+                group: ["postId"],
+            });
+
+            return postVotes;
+        } catch (error) {
+            throw new Error(`Error getting post votes: ${error.message}`);
         }
     },
 };

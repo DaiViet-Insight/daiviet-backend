@@ -95,6 +95,10 @@ module.exports = {
                 rootCommentId: existingRootComment ? rootCommentId : null,
                 postedBy: postedBy,
             });
+
+            const user = await userService.getUserById(postedBy);
+            comment.dataValues.User = user;
+
             return comment;
         } catch (error) {
             throw new Error(`Error creating comment: ${error.message}`);

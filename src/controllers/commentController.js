@@ -19,14 +19,14 @@ module.exports = {
         try {
             const postId = req.postId;
             const data = req.body;
-            await CommentService.createComment(
+            const comment = await CommentService.createComment(
                 postId,
                 data.content,
                 data.rootCommentId,
                 jwtService.decodeToken(req.headers.authorization.substring(7))
                     .id
             );
-            res.send("Tạo comment thành công !!!");
+            res.send(comment);
         } catch (error) {
             res.status(500).json({ error2: error.message });
         }

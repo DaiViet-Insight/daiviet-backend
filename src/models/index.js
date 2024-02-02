@@ -182,6 +182,7 @@ async function initData() {
 }
 
 // Connect to the database and then call initData
+
 // db.sequelize = sequelize
 //     .authenticate()
 //     .then(() => {
@@ -197,5 +198,6 @@ async function initData() {
 //     });
 
 // db.Sequelize = Sequelize;
+
 
 module.exports = db;
