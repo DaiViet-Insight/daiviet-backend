@@ -64,6 +64,7 @@ module.exports = {
             const posts = await Post.findAll({
                 where: {
                     id: postIdArray,
+                    status: 1,
                 },
                 include: [
                     {

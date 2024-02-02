@@ -1,5 +1,6 @@
 const { NotificationComment, Comment } = require("../models");
-const { NotificationPost, PostSave } = require("../models");
+const { NotificationPost, PostSave, Post } = require("../models");
+const { User } = require("../models");
 const Sequelize = require("sequelize");
 
 module.exports = {
@@ -22,9 +23,10 @@ module.exports = {
                 },
                 attributes: [
                     "id",
-                    ["postId", "post_id"],
+                    "postId",
                     "title",
-                    [Sequelize.literal("NULL"), "comment_id"],
+                    "content",
+                    [Sequelize.literal("NULL"), "commentId"],
                     ["createdAt", "createdAt"],
                 ],
             });
@@ -32,8 +34,9 @@ module.exports = {
             const comments = await NotificationComment.findAll({
                 attributes: [
                     "id",
-                    [Sequelize.literal("NULL"), "post_id"],
+                    [Sequelize.literal("NULL"), "postId"],
                     "title",
+                    "content",
                     "commentId",
                     "createdAt",
                 ],
@@ -51,6 +54,46 @@ module.exports = {
             const results = posts
                 .concat(comments)
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            // Bước 4: Lấy thông tin người dùng từ postId hoặc commentId
+            for (let i = 0; i < results.length; i++) {
+                const result = results[i];
+                if (result.postId) {
+                    const user = await Post.findOne({
+                        where: {
+                            id: result.postId,
+                        },
+                        attributes: [],
+                        include: {
+                            model: User,
+                            required: true,
+                            attributes: ["id", "fullname", "avatar"],
+                        },
+                    });
+                    result.dataValues.User = {
+                        id: user.User.id,
+                        fullname: user.User.fullname,
+                        avatar: user.User.avatar,
+                    };
+                } else if (result.commentId) {
+                    const user = await Comment.findOne({
+                        where: {
+                            id: result.commentId,
+                        },
+                        attributes: [],
+                        include: {
+                            model: User,
+                            required: true,
+                            attributes: ["id", "fullname", "avatar"],
+                        },
+                    });
+                    result.dataValues.User = {
+                        id: user.User.id,
+                        fullname: user.User.fullname,
+                        avatar: user.User.avatar,
+                    };
+                }
+            }
 
             // Trả về kết quả theo kích thước mong muốn (nếu có)
             if (size) {

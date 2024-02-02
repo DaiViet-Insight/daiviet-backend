@@ -13,8 +13,13 @@ module.exports = {
         const eventId = req.query.eventId;
         let userId = req.userId;
         if (!userId) {
-            const token = req.headers.authorization.substring(7);
-            userId = jwtService.decodeToken(token).id;
+            if (req.headers.authorization) {
+                const token = req.headers.authorization.substring(7);
+                userId = jwtService.decodeToken(token).id;
+            } else {
+                res.status(401).json({ error: "Unauthorized" });
+                return;
+            }
         }
         try {
             let posts;
@@ -189,5 +194,5 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
-    }
+    },
 };

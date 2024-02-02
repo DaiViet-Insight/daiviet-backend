@@ -9,7 +9,9 @@ module.exports = {
             let queryOptions = {
                 limit: limit,
                 order: [["createdAt", "DESC"]],
-                where: {},
+                where: {
+                    status: 1, // 1 là đã duyệt
+                },
                 include: [
                     {
                         model: User,
@@ -136,6 +138,7 @@ module.exports = {
             const posts = await Post.findAll({
                 where: {
                     id: postIds,
+                    status: 1, // 1 là đã duyệt
                 },
                 order: [
                     [

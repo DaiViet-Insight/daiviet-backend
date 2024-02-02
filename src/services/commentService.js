@@ -123,7 +123,9 @@ module.exports = {
 
             if (postId) {
                 const afterPostCommentCount = await Comment.count({
-                    where: { postId: postId },
+                    where: {
+                        postId: postId,
+                    },
                 });
 
                 queryOptions.having = Sequelize.literal(
