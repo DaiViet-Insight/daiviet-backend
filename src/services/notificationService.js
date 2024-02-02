@@ -43,7 +43,7 @@ module.exports = {
                 include: {
                     model: Comment,
                     required: true,
-                    attributes: [],
+                    attributes: ["postId"],
                     where: {
                         postId: savedPostIds,
                     },
