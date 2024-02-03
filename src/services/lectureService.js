@@ -50,6 +50,41 @@ module.exports = {
             throw new Error(`Error fetching lectures by IDs: ${error.message}`);
         }
     },
+    getLectures: async (eventId, size) => {
+        try {
+            let queryOptions = {};
+
+            queryOptions = {
+                attributes: ["id", "title", "content", "videoURL", "thumbnail"],
+                include: [
+                    {
+                        model: User,
+                        attributes: ["id", "fullname", "username", "avatar"],
+                    },
+                    {
+                        model: Event,
+                        attributes: ["id", "name"],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                ],
+            };
+
+            if (eventId) {
+                queryOptions.include[1].where = {
+                    id: eventId,
+                };
+            }
+
+            queryOptions.limit = size;
+
+            const lectures = await Lecture.findAll(queryOptions);
+            return lectures;
+        } catch (error) {
+            throw new Error(`Error fetching lectures: ${error.message}`);
+        }
+    },
     getLectureById: async (lectureId) => {
         try {
             const lecture = await Lecture.findOne({

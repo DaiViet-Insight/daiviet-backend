@@ -29,7 +29,7 @@ module.exports = {
                 queryOptions.where = {
                     eventId: eventId,
                 };
-            }
+            
             queryOptions.limit = size;
 
             const lectureIds = await LectureEvent.findAll(queryOptions);
@@ -39,7 +39,14 @@ module.exports = {
             const lectures = await lectureService.getLecturesByIds(
                 lectureIdArray
             );
+
             return lectures;
+            }
+            else
+            {
+                const lectures = await lectureService.getLectures();
+                return lectures;
+            }
         } catch (error) {
             throw new Error(`Error fetching lectures ${error.message}`);
         }
